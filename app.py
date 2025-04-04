@@ -12,23 +12,17 @@ import flask_login
 from werkzeug.utils import secure_filename
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from utils import machine_local_ip, storage_init
+from utils import machine_local_ip, storage
 import os
 
 
-'''
-This function will make a storage directory if not exists
-You can use 'custom_storage_dir' function based in storage_init module to set a custom storage dir
-'''
-storage_init.init()
+storage_dir_name, storage_path = storage.init()
 
 ip_address = machine_local_ip.get_local_ipv4()
 port_number = 80 
 username = "admin"
 password = "admin"
 secret = "MohsenFoolad"
-files_dir = storage_init.init()[1]
-files_dir_name = storage_init.init()[0]
 
 login_manager = flask_login.LoginManager()
 
@@ -85,7 +79,7 @@ def login():
         user = User()
         user.id = email
         flask_login.login_user(user)
-        return render_template('upload.html', logged_in = True, ip_address=ip_address,port_number=port_number, files_dir_name=files_dir_name)
+        return render_template('upload.html', logged_in = True, ip_address=ip_address,port_number=port_number, storage_dir_name=storage_dir_name)
 
     return render_template("login.html", error = "Invalid Data !")
 
@@ -135,7 +129,7 @@ def uploader():
 
                 # Use a streaming approach to save the file in chunks
                 
-                file_path = os.path.join(files_dir, file.filename)
+                file_path = os.path.join(storage_path, file.filename)
                 with open(file_path, "wb") as f:
                     while True:
                         chunk = file.stream.read(1024)  # Read 1KB at a time
