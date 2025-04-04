@@ -12,20 +12,19 @@ import flask_login
 from werkzeug.utils import secure_filename
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from utils import machine_local_ip, storage
+from utils import network, storage
 import os
 
 
 storage_dir_name, storage_path = storage.init()
+ip_addr = network.get_local_ipv4()
+port = network.port
 
-ip_address = machine_local_ip.get_local_ipv4()
-port_number = 80 
 username = "admin"
 password = "admin"
 secret = "MohsenFoolad"
 
 login_manager = flask_login.LoginManager()
-
 
 app = Flask(__name__)
 app.secret_key  = secret
@@ -79,7 +78,7 @@ def login():
         user = User()
         user.id = email
         flask_login.login_user(user)
-        return render_template('upload.html', logged_in = True, ip_address=ip_address,port_number=port_number, storage_dir_name=storage_dir_name)
+        return render_template('upload.html', logged_in = True, ip_addr=ip_addr,port=port, storage_dir_name=storage_dir_name)
 
     return render_template("login.html", error = "Invalid Data !")
 
@@ -94,7 +93,7 @@ def protected():
 @app.route('/logout')
 def logout():
     flask_login.logout_user()
-    return render_template("upload.html", ip_address=ip_address,port_number=port_number, message = "Logged out.")
+    return render_template("upload.html", ip_addr=ip_addr,port=port, message = "Logged out.")
 
 @login_manager.unauthorized_handler
 def unauthorized_handler():
@@ -105,9 +104,9 @@ def unauthorized_handler():
 @app.route("/up")
 def upload_func():
     if flask_login.current_user.is_authenticated == False:
-        return render_template("upload.html", ip_address=ip_address,port_number=port_number)
+        return render_template("upload.html", ip_addr=ip_addr,port=port)
     else:
-        return render_template("upload.html", ip_address=ip_address,port_number=port_number, logged_in = True, )
+        return render_template("upload.html", ip_addr=ip_addr,port=port, logged_in = True, )
 
 
 
@@ -168,4 +167,4 @@ def index_files_func(req_path):
 
 
 if __name__ == "__main__":
-    app.run(host=ip_address, port=port_number, debug=True)
+    app.run(host=ip_addr, port=port, debug=True)
