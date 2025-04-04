@@ -1,49 +1,24 @@
-from flask import (
-    Flask,
-    render_template,
-    send_file,
-    url_for,
-    redirect,
-    abort,
-    request,
-    json
-)
+import os
+from flask import Flask, render_template, send_file, request
 import flask_login
 from werkzeug.utils import secure_filename
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
+
 from utils import network, storage
-import os
 
 
 storage_dir_name, storage_path = storage.init()
 ip_addr = network.get_local_ipv4()
 port = network.port
 
-username = "admin"
-password = "admin"
-secret = "MohsenFoolad"
-
-login_manager = flask_login.LoginManager()
-
 app = Flask(__name__)
-app.secret_key  = secret
+login_manager = flask_login.LoginManager()
+app.secret_key = os.urandom(24)
 login_manager.init_app(app)
-
-users = {username : {'password' : password}}
-print(app.config['MAX_CONTENT_LENGTH'])
-
-limiter = Limiter(
-    get_remote_address,
-    app=app,
-    default_limits=["484 per day", "48 per hour"],
-    storage_uri="memory://",
-)
-
-
 
 class User(flask_login.UserMixin):
     pass
+
+users = {'admin': {'password': 'admin'}}
 
 
 @login_manager.user_loader
@@ -68,7 +43,6 @@ def request_loader(request):
 
 
 @app.route('/login', methods=['GET', 'POST'])
-@limiter.limit("5 per minute")
 def login():
     if request.method == 'GET':
         return render_template("login.html")
@@ -87,8 +61,6 @@ def login():
 @flask_login.login_required
 def protected():
     return render_template("index_files.html")
-
-
 
 @app.route('/logout')
 def logout():
@@ -159,11 +131,6 @@ def index_files_func(req_path):
     files = os.listdir(abs_path)
     print(files)
     return render_template("index_files.html", files=files)
-
-
-
-
-
 
 
 if __name__ == "__main__":
