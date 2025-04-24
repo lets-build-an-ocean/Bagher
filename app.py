@@ -76,9 +76,9 @@ def unauthorized_handler():
 @app.route("/up")
 def upload_func():
     if flask_login.current_user.is_authenticated == False:
-        return render_template("upload.html", ip_addr=ip_addr,port=port)
+        return render_template("upload.html", ip_addr=ip_addr,port=port, files_dir_name=storage_dir_name)
     else:
-        return render_template("upload.html", ip_addr=ip_addr,port=port, logged_in = True, )
+        return render_template("upload.html", ip_addr=ip_addr,port=port, logged_in = True)
 
 
 
@@ -87,12 +87,12 @@ def uploader():
     if request.method == "POST":
 
         if 'file' not in request.files:
-            return render_template("upload.html", message="No selected file")
+            return render_template("upload.html", message="No selected file", ip_addr=ip_addr,port=port)
 
         file = request.files["file"]
         
         if file.filename == "":
-            return render_template("upload.html", message="No selected file")
+            return render_template("upload.html", message="No selected file", ip_addr=ip_addr,port=port)
         
         if file:
             try:
@@ -111,25 +111,22 @@ def uploader():
                 print("File saved successfully.")
 
             except Exception as e:
-                return render_template("upload.html", message=f"Error: {str(e)}")
+                return render_template("upload.html", message=f"Error: {str(e)}", ip_addr=ip_addr,port=port)
 
-    return render_template("up_done.html")
+    return render_template("up_done.html", ip_addr=ip_addr,port=port)
 
 
 @app.route("/<path:req_path>")
-@flask_login.login_required
 def index_files_func(req_path):
-    base_dir = "../"
+    base_dir = "./"
     abs_path = os.path.join(base_dir, req_path)
     
-    print(abs_path)
     if not os.path.exists(abs_path):
         return f"{abs_path}"
     if os.path.isfile(abs_path):
         return send_file(abs_path)
 
     files = os.listdir(abs_path)
-    print(files)
     return render_template("index_files.html", files=files)
 
 
