@@ -1,14 +1,136 @@
 <html>
 <head>
-	<link rel="stylesheet" href="https://cdn.rawgit.com/Chalarangelo/mini.css/v3.0.1/dist/mini-default.min.css">
-	<title>Videos page</title>
+  <link rel="stylesheet" href="https://cdn.rawgit.com/Chalarangelo/mini.css/v3.0.1/dist/mini-default.min.css">
+  <title>لیست فایل ها</title>
+  <style>
+    body {
+      padding: 2rem;
+      background-color: #f8f9fa;
+    }
+
+    h1 {
+      color: #0275d8;
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .back-button {
+      display: inline-block;
+      margin-bottom: 2rem;
+      padding: 0.7rem 1.5rem;
+      background-color: #0275d8; /* Blue background */
+      color: white;
+      font-size: 1.2rem; /* Slightly larger text */
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Shadow for better visibility */
+      transition: background-color 0.3s ease, transform 0.3s ease;
+    }
+
+    .back-button:hover {
+      background-color: #025aa5; /* Darker blue when hovering */
+      transform: scale(1.05); /* Slight scale effect on hover */
+    }
+
+    .back-button:active {
+      background-color: #023e7d; /* Even darker blue when clicked */
+      transform: scale(1.05); /* Keep the scale effect on click */
+    }
+
+    ul.file-list {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    ul.file-list li {
+      margin: 1rem 0;
+      font-size: 1.3rem;
+      overflow: hidden;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+      transform: scale(1);
+      transition: transform 0.2s ease;
+    }
+
+    ul.file-list li:hover {
+      transform: scale(1.03);
+    }
+
+    ul.file-list a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem;
+      background: linear-gradient(to right, #0275d8, #0499f9);
+      color: white;
+      text-decoration: none;
+      transition: background 0.3s ease;
+      border-radius: 8px;
+    }
+
+    ul.file-list a:hover {
+      background: linear-gradient(to right, #025aa5, #0275d8);
+    }
+
+    ul.file-list span.index {
+      margin-right: 0.7rem;
+      font-weight: bold;
+    }
+
+    ul.file-list span.emoji {
+      margin-left: 0.7rem;
+      font-size: 1.4rem;
+      transition: transform 0.3s ease;
+    }
+
+    ul.file-list li:hover span.emoji {
+      animation: bounce 0.6s infinite alternate;
+    }
+
+    @keyframes bounce {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(-5px) rotate(5deg); }
+    }
+
+    hr {
+      margin: 3rem 0;
+    }
+  </style>
 </head>
-	<body style="moz-transform: scale(1.4);">
-	<ul>
-		{% for file in files %}
-			<li><a href="{{ (request.path + '/' if request.path != '/' else '') + file }}">{{ file }}</a></li>
-		{% endfor %}
-	</ul>
-	<hr><hr/>
-	</body>
+<body>
+
+  <a href="/" class="back-button">🏠 بازگشت به خانه</a>
+
+  <h1>لیست فایل ها</h1>
+
+  <ul class="file-list">
+    {% for file in files %}
+      <li>
+        <a href="{{ (request.path + '/' if request.path != '/' else '') + file }}">
+          <div>
+            <span class="index">{{ loop.index }}.</span>
+            {{ file }}
+          </div>
+
+          {% if file.endswith(".mp4") or file.endswith(".webm") %}
+            <span class="emoji">🎥</span>
+          {% elif file.endswith(".jpg") or file.endswith(".jpeg") or file.endswith(".png") or file.endswith(".gif") %}
+            <span class="emoji">📷</span>
+          {% elif file.endswith(".mp3") or file.endswith(".wav") %}
+            <span class="emoji">🎵</span>
+          {% elif file.endswith(".pdf") %}
+            <span class="emoji">📄</span>
+          {% else %}
+            <span class="emoji">📁</span>
+          {% endif %}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+
+  <hr><hr/>
+
+</body>
 </html>
