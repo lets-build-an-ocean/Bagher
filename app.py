@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 import logging
 from flask import Flask, render_template, send_file, request, abort
 from werkzeug.utils import secure_filename
@@ -61,13 +62,28 @@ def uploader():
             file.save(file_path)
             logger.info(f"File {filename} saved successfully.")
 
-            return render_template("up_done.html", ip_addr=ip_addr, port=port)
+            return render_template("up_done.html", ip_addr=ip_addr, port=port, files_dir_name=storage_dir_name)
 
         except Exception as e:
             logger.error(f"Error saving file: {e}")
             return render_template("upload.html", message=f"Error: {str(e)}", ip_addr=ip_addr, port=port)
 
     return render_template("upload.html", ip_addr=ip_addr, port=port)
+
+
+@app.route('/save-text', methods=['POST'])
+def save_text():
+    user_text = request.form.get('user_text')
+    if user_text:
+        file_name = f"{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+        file_path = os.path.join(storage_path, file_name)
+        with open(file_path, 'w') as f:
+            f.write(user_text)
+        return render_template("up_done.html", ip_addr=ip_addr, port=port, files_dir_name=storage_dir_name)
+    
+    e = "No text is provided"
+    logger.error(e)
+    return render_template("upload.html", message=f"Error: {e}", ip_addr=ip_addr, port=port)
 
 
 @app.route("/<path:req_path>")
