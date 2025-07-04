@@ -16,11 +16,11 @@ port = 8000
 
 # Flask app setup
 app = Flask(__name__)
-app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))  # Set a secure secret key via env var
+app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24))
 
 # Allowed file extensions for image and video files
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf', 'txt', 'mp4', 'mov', 'avi', 'mkv', 'flv'}
-MAX_CONTENT_LENGTH = 256 * 1024 * 1024  # 16MB file size limit
+MAX_CONTENT_LENGTH = 256 * 1024 * 1024
 app.config['UPLOAD_FOLDER'] = storage_path
 app.config['MAX_CONTENT_LENGTH'] = MAX_CONTENT_LENGTH
 
