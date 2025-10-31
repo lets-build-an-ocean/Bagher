@@ -28,3 +28,8 @@ Follow these steps to set up and run the Bagher web server:
    ```bash
    python app.py run
    ```
+
+
+   ## TODO
+
+- [ ] Dockerize
